@@ -60,4 +60,5 @@ Utility functions for traversing through and testing for node are `JDexNode.Path
 
 ``` c#
 var node = JDexNode.PathThrough(root, "node:node#4:node");
+var exists = JDexNode.HasPath(root, "node:node#4:node");
 ```
