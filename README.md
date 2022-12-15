@@ -56,7 +56,7 @@ Parsing of string is posible as through the use of `JDexNode.Parse(string)`.
 var node = JDexNode.Parse("first.node: \"Node Value\" inner.node: \"Inner Node Value\"");
 ```
 
-Utility functions for traversing through and testing for node are `JDexNode.PathThrough(JDexNode, params string[])` and `JDexNode.HasPath(JDexNode, params string[])`. JDex string paths are formed by chaining JDex key names seperated by a collin (`:`) for the path. The use of a pound (`#`) character after a JDex key stats the sub index for the key name.
+Utility functions for traversing through and testing for node are `JDexNode.PathThrough(JDexNode, params string[])` and `JDexNode.HasPath(JDexNode, params string[])`. JDex paths are formed by chaining JDex key names seperated by a collin (`:`) for the path. The use of a pound (`#`) character after a JDex key stats the sub index for the key name.
 
 ``` c#
 var node = JDexNode.PathThrough(root, "node:node#4:node");

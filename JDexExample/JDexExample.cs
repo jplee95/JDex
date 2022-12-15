@@ -1,8 +1,8 @@
-﻿using System;
-using JDex;
+﻿using JDex;
+using System;
 
-namespace JDexTest {
-    class Program {
+namespace JDexExample {
+    class JDexExample {
         static void Main(string[ ] args) {
             JDexNode node = null;
             using(var reader = new JDexReader("test.jdex")) {

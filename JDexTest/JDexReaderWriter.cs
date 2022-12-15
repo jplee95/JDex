@@ -22,7 +22,7 @@ namespace JDexTest {
                 "\tother: \"something\"";
 
         [TestMethod]
-        [DeploymentItem("..\\..\\..\\Resources\\test.jdex", ".")]
+        //[DeploymentItem("~\\Resources\\test.jdex", ".")]
         public void JDexReaderTest( ) {
             using var reader = new JDexReader("test.jdex");
             Assert.AreEqual(JDexNode.Parse(TEST_STRING).ToString( ), reader.ReadToEnd( ).ToString( ));
