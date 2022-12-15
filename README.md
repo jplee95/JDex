@@ -20,8 +20,8 @@ index_name: "string value", "second value"
         # Shorthand index declaration continue after the first index
         third_index: one: "one" two: "two"
 
-# You can have multiple root index entries
-root_index: ""
+# You can have multiple index entries at root level
+box_index: "2"
     # Index keys can be repeated
     box: "big"
     box: "small"
