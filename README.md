@@ -46,7 +46,7 @@ using(var writer = new JDex.JDexWriter("file.jdex"))
 
 // For reading files
 using(var reader = new JDex.JDexReader("file.jdex")) {
-    var node = reader.Read( );
+    var node = reader.ReadToEnd( );
     System.Console.WriteLine(node);
 }
 ```
