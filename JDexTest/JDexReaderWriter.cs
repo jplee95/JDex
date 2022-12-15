@@ -21,18 +21,14 @@ namespace JDexTest {
                 "net.ry:\n" +
                 "\tother: \"something\"";
 
-        [AssemblyInitialize]
-        public static void AssemblyInitialize(TestContext context) {
-            if(context.TestName == "JDexReaderTest") {
-                if(File.Exists("test.jdex")) return;
-                using var writer = new StreamWriter("test.jdex");
-                writer.WriteLine(TEST_STRING);
-            }
-        }
-
         [TestMethod]
         //[DeploymentItem("~\\Resources\\test.jdex", ".")]
         public void JDexReaderTest( ) {
+            if(!File.Exists("test.jdex")) {
+                using var writer = new StreamWriter("test.jdex");
+                writer.WriteLine(TEST_STRING);
+            }
+
             using var reader = new JDexReader("test.jdex");
             Assert.AreEqual(JDexNode.Parse(TEST_STRING).ToString( ), reader.ReadToEnd( ).ToString( ));
         }
