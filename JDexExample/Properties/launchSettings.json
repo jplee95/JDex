@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "JDexExample": {
+      "commandName": "Project",
+      "workingDirectory": "$(ProjectDir)\\work"
+    }
+  }
+}

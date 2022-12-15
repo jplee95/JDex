@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Authors>Jordan Paladino</Authors>
+    <Copyright>Copyright 2022 Jordan Paladino</Copyright>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <RepositoryType>Git</RepositoryType>
+    <Company>Jordan Paladino</Company>
+    <NeutralLanguage>en</NeutralLanguage>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="JDexExample\**" />
+    <Compile Remove="JDexTest\**" />
+    <EmbeddedResource Remove="JDexExample\**" />
+    <EmbeddedResource Remove="JDexTest\**" />
+    <None Remove="JDexExample\**" />
+    <None Remove="JDexTest\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+</Project>

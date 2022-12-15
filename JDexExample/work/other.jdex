@@ -1,0 +1,15 @@
+newKey: "Something"
+something: "Hello World"
+	key1: "this", "something else"
+	key2: "1"
+		other_list:
+			a: "1"
+			b: "1"
+			c: "1"
+		set:
+			cube:
+				index: "1"
+			cube:
+				index: "2"
+			cube:
+				index: "4"
