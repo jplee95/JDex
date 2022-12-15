@@ -25,6 +25,9 @@ root_index: ""
     # Index keys can be repeated
     box: "big"
     box: "small"
+    
+# Unicode and other escape characters in value string
+unicode_index: "\u0065"
 ```
 
 # C# Usage
