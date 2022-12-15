@@ -1,11 +1,12 @@
-﻿# JDex C# (Might be a temperary name)
+# JDex C# (Might be a temperary name)
 
 [![LICENSE](https://img.shields.io/github/license/jplee95/JDex)](LICENSE)
+[![STATUS](https://img.shields.io/github/workflow/status/jplee95/JDex/.NET)]()
 
 JDex is a simple indexing and string value list file structure designed to be simple and lightweight.
 
 # Features:
-* Index valid name include all of '`a-Z`', '`0-9`', '`_`', and '`.`' if not on key bounds
+* Index valid name may include any of `a-Z`, `0-9`, `_`, and `.`
 * Child index are assigned based on indent (`tab`) level
 * Index can have a list of quoted (`"`) string values using commas (`,`) for next value
 * Index values have escape characters and unicode support
