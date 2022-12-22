@@ -17,8 +17,8 @@ JDex is a simple indexing and value list file structure designed to be simply wr
 
 #### File_Example.jdex
 
-<!-- NOTE: Borrowing toml syntax highlighting for comments -->
-``` toml
+<!-- NOTE: Borrowing py syntax highlighting for comments -->
+``` py
 # Comments can start on its own line
 index_name: "string value", "second value"
     second_index: "value" # Or be at the end of an entry
