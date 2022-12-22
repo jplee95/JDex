@@ -15,3 +15,31 @@ something: "Hello World"
 # A Comment for a comment
 net.ry:
 	other: "something"
+
+# Comments can start on its own line
+index_name: "string value", "second value"
+    second_index: "value" # Or be at the end of an entry
+        # Shorthand index declaration continue after the first index
+        third_index: one: "one" two: "two"
+
+numeric_values:
+    int: -213768
+    # Hex and binary values can not have a sign (+ or -)
+    hex: 0x2222
+    binary: 0b100100
+    float: 0.002e-3
+
+# allowed values for bool: true or false
+boolean_values:
+    true: true
+    false: false
+
+# You can have multiple index entries at root level
+box_index: 2
+    # Index keys can be repeated
+    box: "big"
+    box: "small"
+
+# Unicode and other escape characters in value string
+unicode_character: "\u0065"
+exscape_character: "\n\t\f"

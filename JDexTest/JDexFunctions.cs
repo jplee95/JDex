@@ -1,10 +1,29 @@
+// Copyright 2022 Jordan Paladino
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify,
+// merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+// permit persons to whom the Software is furnished to do so, subject to the following
+// conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies
+// or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+// OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 using JDex;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace JDexTest {
 
     [TestClass]
-    public class JDexNodeFunctions {
+    public class JDexFunctions {
 
         [TestMethod]
         public void JDexNodeAddSetRemoveTest( ) {
@@ -109,7 +128,7 @@ namespace JDexTest {
 
             Assert.AreEqual("node1:\n\tempty_node:\n\tempty_node:\nnode2:\n\tnode:\n\t\tnode:", root.ToString( ));
 
-            Assert.IsTrue(root.TryGetValue("node1", 0, out var node));
+            Assert.IsTrue(root.TryGetNode("node1", 0, out var node));
             Assert.AreEqual(node1, node);
 
             var readOnlyNode = root.AsReadOnly( );
@@ -167,13 +186,13 @@ namespace JDexTest {
             Assert.AreEqual(1, node.ValueCount);
             Assert.AreEqual("value 3", node[0]);
 
-            node.AddValueRange(new string[] { "value 4", "value 5" });
+            node.AddValueRange(new JDexValue[ ] { "value 4", "value 5" });
             Assert.AreEqual(3, node.ValueCount);
             Assert.AreEqual("value 3", node[0]);
             Assert.AreEqual("value 4", node[1]);
             Assert.AreEqual("value 5", node[2]);
 
-            node.InsertValueRange(0, new string[ ] { "value 1", "value 2" });
+            node.InsertValueRange(0, new JDexValue[ ] { "value 1", "value 2" });
             Assert.AreEqual(5, node.ValueCount);
             Assert.AreEqual("value 1", node[0]);
             Assert.AreEqual("value 2", node[1]);
@@ -219,6 +238,30 @@ namespace JDexTest {
 
             var innerNext = JDexNode.PathThrough(node, "node:item:next");
             Assert.AreEqual("Other", innerNext[0]);
+
+            var jdexStringValues = "Int: 1234567890\nSign: -76891234\nHex: 0x00f022AA\nBinary: 0b01010001\nFloat: .0111\nExponent: -12.1e-2\nTrue: true\nFalse: false";
+            var valueNode = JDexNode.Parse(jdexStringValues);
+
+            Assert.AreEqual(JDexValueType.Int, valueNode["Int", 0][0].Type);
+            Assert.AreEqual(1234567890, valueNode["Int", 0][0]);
+
+            Assert.AreEqual(JDexValueType.Int, valueNode["Hex", 0][0].Type);
+            Assert.AreEqual(0x00f022AA, valueNode["Hex", 0][0]);
+
+            Assert.AreEqual(JDexValueType.Int, valueNode["Binary", 0][0].Type);
+            Assert.AreEqual(0b01010001, valueNode["Binary", 0][0]);
+
+            Assert.AreEqual(JDexValueType.Float, valueNode["Float", 0][0].Type);
+            Assert.AreEqual(.0111f, valueNode["Float", 0][0]);
+
+            Assert.AreEqual(JDexValueType.Float, valueNode["Exponent", 0][0].Type);
+            Assert.AreEqual(-12.1e-2f, valueNode["Exponent", 0][0]);
+
+            Assert.AreEqual(JDexValueType.Bool, valueNode["True", 0][0].Type);
+            Assert.AreEqual(true, valueNode["True", 0][0]);
+
+            Assert.AreEqual(JDexValueType.Bool, valueNode["False", 0][0].Type);
+            Assert.AreEqual(false, valueNode["False", 0][0]);
         }
 
     }

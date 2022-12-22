@@ -29,7 +29,7 @@ namespace JDex {
         /// <returns>The value at the specified <paramref name="index"/></returns>
         /// <exception cref="ArgumentNullException"><paramref name="value"/> is <see langword="null"/></exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is less than 0 or greater then or equal to <see cref="ValueCount"/></exception>
-        string this[int index] { get; set; }
+        JDexValue this[int index] { get; set; }
         /// <summary>Gets the <see cref="JDexNode.JDexNodeList"/> at the specified <paramref name="key"/></summary>
         /// <param name="key">The non-null key of the list to get</param>
         /// <returns>The <see cref="JDexNode.JDexNodeList"/> at the specified <paramref name="key"/></returns>
@@ -67,11 +67,11 @@ namespace JDex {
         /// <param name="value">The value to add to this <see cref="IJDexNode{T}"/></param>
         /// <exception cref="ArgumentInvalidException"><paramref name="key"/> is invalid key</exception>
         /// <exception cref="ArgumentNullException"><paramref name="value"/> is <see langword="null"/></exception>
-        void AddValue(string value);
+        void AddValue(JDexValue value);
         /// <summary>Adds the specified <paramref name="collection"/> of values into this <see cref="IJDexNode{T}"/></summary>
         /// <param name="collection">The collection of values to insert into this <see cref="IJDexNode{T}"/></param>
         /// <exception cref="ArgumentNullException"><paramref name="collection"/> is <see langword="null"/> or a value in <paramref name="collection"/> is <see langword="null"/></exception>
-        void AddValueRange(IEnumerable<string> collection);
+        void AddValueRange(IEnumerable<JDexValue> collection);
         /// <summary>Removes all child nodes from this <see cref="IJDexNode{T}"/>.
         /// This unlinks all child nodes and lists from this node</summary>
         void Clear( );
@@ -93,13 +93,13 @@ namespace JDex {
         /// <param name="value">The value to insert into this <see cref="IJDexNode{T}"/></param>
         /// <exception cref="ArgumentNullException"><paramref name="value"/> is <see langword="null"/></exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is less than 0 or greater then <see cref="ValueCount"/></exception>
-        void InsertValue(int index, string value);
+        void InsertValue(int index, JDexValue value);
         /// <summary>Inserts the <paramref name="collection"/> of values into this <see cref="IJDexNode{T}"/> at the specified <paramref name="index"/></summary>
         /// <param name="index">The zero-based index to insert the collection of values at</param>
         /// <param name="collection">The collection of values to insert into this <see cref="IJDexNode{T}"/></param>
         /// <exception cref="ArgumentNullException"><paramref name="collection"/> is <see langword="null"/> or a value in <paramref name="collection"/> is <see langword="null"/></exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is less than 0 or greater then <see cref="ValueCount"/></exception>
-        public void InsertValueRange(int index, IEnumerable<string> collection);
+        public void InsertValueRange(int index, IEnumerable<JDexValue> collection);
         /// <summary>Remove the child <paramref name="node"/> from this <see cref="IJDexNode{T}"/></summary>
         /// <param name="node">The child node of this <see cref="IJDexNode{T}"/> to remove</param>
         /// <returns><see langword="true"/> if the child <paramref name="node"/> is successfully found and removed; otherwise, <see langword="false"/></returns>
@@ -120,7 +120,7 @@ namespace JDex {
         /// <param name="value">The value to remove from this <see cref="IJDexNode{T}"/></param>
         /// <returns><see langword="true"/> if the <paramref name="value"/> is successfully found and removed; otherwise, <see langword="false"/></returns>
         /// <exception cref="ArgumentNullException"><paramref name="value"/> is <see langword="null"/></exception>
-        bool RemoveValue(string value);
+        bool RemoveValue(JDexValue value);
         /// <summary>Removes the value at the specified <paramref name="index"/> from this <see cref="IJDexNode{T}"/></summary>
         /// <param name="index">The zero-based index of the value to remove</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is less than 0 or greater than or equal to <see cref="ValueCount"/></exception>

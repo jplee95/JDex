@@ -19,10 +19,4 @@
     <ProjectReference Include="..\JDex.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="Resources\test.jdex">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
 </Project>

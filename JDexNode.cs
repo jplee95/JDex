@@ -31,7 +31,7 @@ namespace JDex {
 
         private string _key;
         private JDexNode _parent;
-        private List<string> _values;
+        private List<JDexValue> _values;
         private Dictionary<string, JDexNodeList> _children;
 
         /// <summary>Gets or sets the value at the specified <paramref name="index"/></summary>
@@ -39,7 +39,7 @@ namespace JDex {
         /// <returns>The value at the specified <paramref name="index"/></returns>
         /// <exception cref="ArgumentNullException"><paramref name="value"/> is <see langword="null"/></exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is less than 0 or greater then or equal to <see cref="ValueCount"/></exception>
-        public string this[int index] {
+        public JDexValue this[int index] {
             get => _values[index];
             set => _values[index] = value ?? throw new ArgumentNullException(nameof(value));
         }
@@ -82,7 +82,7 @@ namespace JDex {
         public JDexNode( ) {
             _key = null;
             _parent = null;
-            _values = new List<string>( );
+            _values = new List<JDexValue>( );
             _children = new Dictionary<string, JDexNodeList>( );
         }
 
@@ -101,14 +101,14 @@ namespace JDex {
         /// <summary>Adds the specified <paramref name="value"/> into this <see cref="JDexNode"/></summary>
         /// <param name="value">The value to add to this <see cref="JDexNode"/></param>
         /// <exception cref="ArgumentNullException"><paramref name="value"/> is <see langword="null"/></exception>
-        public void AddValue(string value) => _values.Add(value ?? throw new ArgumentNullException(nameof(value)));
+        public void AddValue(JDexValue value) => _values.Add(value ?? throw new ArgumentNullException(nameof(value)));
         /// <summary>Adds the specified <paramref name="collection"/> of values into this <see cref="JDexNode"/></summary>
         /// <param name="collection">The collection of values to insert into this <see cref="JDexNode"/></param>
         /// <exception cref="ArgumentNullException"><paramref name="collection"/> is <see langword="null"/> or a value in <paramref name="collection"/> is <see langword="null"/></exception>
-        public void AddValueRange(IEnumerable<string> collection) {
+        public void AddValueRange(IEnumerable<JDexValue> collection) {
             if(collection == null)
                 throw new ArgumentNullException(nameof(collection));
-            if(collection.Any((string s) => s == null))
+            if(collection.Any((JDexValue s) => s == null))
                 throw new ArgumentNullException(nameof(collection), "Value in collection is null");
             _values.AddRange(collection);
         }
@@ -153,7 +153,7 @@ namespace JDex {
         /// <param name="value">The value to insert into this <see cref="JDexNode"/></param>
         /// <exception cref="ArgumentNullException"><paramref name="value"/> is <see langword="null"/></exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is less than 0 or greater then <see cref="ValueCount"/></exception>
-        public void InsertValue(int index, string value) {
+        public void InsertValue(int index, JDexValue value) {
             if(value == null) throw new ArgumentNullException(nameof(value));
             if(index < 0 || index > _values.Count)
                 throw new ArgumentOutOfRangeException(nameof(index));
@@ -164,12 +164,12 @@ namespace JDex {
         /// <param name="collection">The collection of values to insert into this <see cref="JDexNode"/></param>
         /// <exception cref="ArgumentNullException"><paramref name="collection"/> is <see langword="null"/> or a value in <paramref name="collection"/> is <see langword="null"/></exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is less than 0 or greater then <see cref="ValueCount"/></exception>
-        public void InsertValueRange(int index, IEnumerable<string> collection) {
+        public void InsertValueRange(int index, IEnumerable<JDexValue> collection) {
             if(index < 0 || index > _values.Count)
                 throw new ArgumentOutOfRangeException(nameof(index));
             if(collection == null)
                 throw new ArgumentNullException(nameof(collection));
-            if(collection.Any((string s) => s == null))
+            if(collection.Any((JDexValue s) => s == null))
                 throw new ArgumentNullException(nameof(collection), "Value in collection is null");
             _values.InsertRange(index, collection);
         }
@@ -210,7 +210,7 @@ namespace JDex {
         /// <param name="value">The value to remove from this <see cref="JDexNode"/></param>
         /// <returns><see langword="true"/> if the <paramref name="value"/> is successfully found and removed; otherwise, <see langword="false"/></returns>
         /// <exception cref="ArgumentNullException"><paramref name="value"/> is <see langword="null"/></exception>
-        public bool RemoveValue(string value) {
+        public bool RemoveValue(JDexValue value) {
             if(value == null) throw new ArgumentNullException(nameof(value));
             return _values.Remove(value);
         }
@@ -240,7 +240,7 @@ namespace JDex {
         /// <returns><see langword="true"/> if this <see cref="JDexNode"/> has the specified <paramref name="key"/> and <paramref name="index"/>; otherwise, <see langword="false"/></returns>
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is <see langword="null"/></exception>
         /// <exception cref="ArgumentInvalidException"><paramref name="key"/> is invalid key</exception>
-        public bool TryGetValue(string key, int index, [MaybeNullWhen(false)] out JDexNode node) {
+        public bool TryGetNode(string key, int index, [MaybeNullWhen(false)] out JDexNode node) {
             if(_children.TryGetValue(ValidKey(key), out var list) && index >= 0 && index < list.Count) {
                 node = list[index];
                 return true;
@@ -418,10 +418,12 @@ namespace JDex {
                         if(!consumeWhitespace( )) {
                             shiftBegin( );
 
-                            if(line[begin + offset] == '"') {
-                                while(begin + offset < line.Length) {
-                                    if(line[begin + offset] != '"')
-                                        throw new JDexParseException($"Expected value entry at line {i + 1} col {begin + offset + 1 + indent * 3}");
+                            bool comma = false;
+                            while(begin + offset < line.Length) {
+                                var ch = line[begin + offset];
+
+                                var hasValue = false;
+                                if(ch == '"') {
                                     shiftBegin(1);
 
                                     bool skip = false;
@@ -434,25 +436,141 @@ namespace JDex {
                                     if(begin + offset >= line.Length)
                                         throw new JDexParseException($"Unexpected end of line for value entry at line {i + 1} col {begin + indent * 3}");
 
-                                    var value = line.Substring(begin, offset);
-                                    node.AddValue(FromLiteral(value));
+                                    node.AddValue(FromLiteral(line.Substring(begin, offset)));
                                     shiftBegin(1);
-
                                     if(consumeWhitespace( ))
                                         break;
                                     shiftBegin( );
+                                    hasValue = true;
+                                } else if(char.IsDigit(ch) || ch == '.' || ch == '+' || ch == '-') {
+                                    shiftBegin( );
 
-                                    if(line[begin] == '#') break;
+                                    var isFloat = false;
+                                    var hasExponent = false;
+                                    var isHex = false;
+                                    var isBinary = false;
+                                    var zeroFirst = false;
 
-                                    if(line[begin] == ',') {
+                                    while(begin + offset < line.Length) {
+                                        ch = char.ToLower(line[begin + offset]);
+                                        if(ch == ':') break;
+
+                                        if(ch == ',' || ch == '#') {
+                                            if(offset == 1 && isFloat || offset == 2 && (isHex || isBinary))
+                                                if(ch == ',') throw new JDexParseException($"Unexpected end of entry at line {i + 1} col {begin + offset + indent * 3}");
+                                                else if(ch == '#') throw new JDexParseException($"Unexpected end of line at {i + 1} col {begin + offset + indent * 3}");
+                                            break;
+                                        }
+
+                                        if(isBinary && offset >= 34)
+                                            throw new JDexParseException($"Unexpected binary digit length (max 32) at line {i + 1} col {begin + offset + indent * 3}");
+                                        else if(isHex && offset >= 10)
+                                            throw new JDexParseException($"Unexpected hex digit length (max 8) at line {i + 1} col {begin + offset + indent * 3}");
+
+                                        if(offset == 0 && ch == '0') zeroFirst = true;
+                                        else if(ch == '+' || ch == '-') {
+                                            if(!(offset == 0 || hasExponent && char.ToLower(line[begin + offset - 1]) == 'e'))
+                                                throw new JDexParseException($"Unexpected symbol '{ch}' at {i + 1} col {begin + offset + indent * 3}");
+                                        } else if(ch == 'e') {
+                                            if(offset == 0 || hasExponent)
+                                                throw new JDexParseException($"Unexpected symbol '{ch}' at {i + 1} col {begin + offset + indent * 3}");
+                                            if(offset > 0 && line[begin + offset - 1] == '.')
+                                                throw new JDexParseException($"Unexpected '.' at {i + 1} col {begin + offset + indent * 3 - 1}");
+                                            isFloat = true;
+                                            hasExponent = true;
+                                        } else if(ch == '.') {
+                                            if(isFloat || isHex || isBinary)
+                                                throw new JDexParseException($"Unexpected '.' at line {i + 1} col {begin + offset + indent * 3}");
+                                            isFloat = true;
+                                        } else if(offset == 1 && zeroFirst && (ch == 'x')) isHex = true;
+                                        else if(offset == 1 && zeroFirst && (ch == 'b')) isBinary = true;
+                                        else if(isBinary && ch != '0' && ch != '1' || !(char.IsDigit(ch) || isHex && ch >= 'a' && ch <= 'f'))
+                                            throw new JDexParseException($"Unexpected symbol '{ch}' at {i + 1} col {begin + offset + indent * 3}");
                                         ++offset;
-                                        if(consumeWhitespace( ))
-                                            throw new JDexParseException($"Unexpected end of line at line {i + 1}");
-                                        continue;
                                     }
 
+                                    if(isFloat) {
+                                        var str = line.Substring(begin, offset);
+                                        if(str[^1] == '.')
+                                            throw new JDexParseException($"Unexpected '.' at {i + 1} col {begin + offset + indent * 3 - 1}");
+                                        if(str[^1] == '+' || str[^1] == '-')
+                                            throw new JDexParseException($"Expected numeric value at {i + 1} col {begin + offset + indent * 3}");
+                                        node.AddValue(float.Parse(str));
+                                    } else {
+                                        if((isHex || isBinary) && offset == 2)
+                                            throw new JDexParseException($"Expected numeric value at {i + 1} col {begin + offset + indent * 3}");
+
+                                        var s = 0;
+                                        var t = 10;
+                                        if(isHex) {
+                                            s = 2;
+                                            t = 16;
+                                        } else if(isBinary) {
+                                            s = 2;
+                                            t = 2;
+                                        }
+                                        
+                                        node.AddValue(Convert.ToInt32(line.Substring(begin + s, offset - s), t));
+                                    }
+                                    if(consumeWhitespace( ))
+                                        break;
+                                    shiftBegin( );
+                                    hasValue = true;
+                                } else if(ch == 't' || ch == 'f') {
+                                    shiftBegin( );
+
+                                    const string trueString = "true";
+                                    const string falseString = "false";
+
+                                    bool valid = true;
+                                    if(ch == 't')
+                                        for(; offset < trueString.Length && valid; offset++)
+                                            valid = trueString[offset] == line[begin + offset];
+                                    else if(ch == 'f')
+                                        for(; offset < falseString.Length && valid; offset++)
+                                            valid = falseString[offset] == line[begin + offset];
+
+                                    if(begin + offset + 1 < line.Length && line[begin + offset] == ':') break;
+
+                                    if(valid) {
+                                        node.AddValue(ch == 't');
+                                        if(consumeWhitespace( ))
+                                            break;
+                                        shiftBegin( );
+                                        hasValue = true;
+                                    } else throw new JDexParseException($"Unexpected symbol at line {i + 1} col {begin + indent * 3}");
+                                } else {
+                                    if(consumeWhitespace( ))
+                                        break;
+                                    shiftBegin( );
+                                }
+
+                                if(begin + offset >= line.Length) break;
+                                c = line[begin + offset];
+                                if(char.IsLetterOrDigit(c) || c == '.' || c == '_' || c == ':') {
+                                    if(comma) throw new JDexParseException($"Unexpected symbol at line {i + 1} col {begin + indent * 3}");
+
+                                    offset = 0;
                                     break;
                                 }
+
+                                comma = false;
+                                shiftBegin( );
+
+                                if(line[begin] == '#') break;
+                                if(line[begin] == ',') {
+                                    if(!hasValue)
+                                        throw new JDexParseException($"Unexpected ',' at line {i + 1} col {begin + indent * 3}");
+
+                                    ++offset;
+                                    if(consumeWhitespace( ))
+                                        throw new JDexParseException($"Unexpected end of line at line {i + 1}");
+
+                                    comma = true;
+                                    continue;
+                                }
+
+                                throw new JDexParseException($"Unexpected symbol at line {i + 1} col {begin + indent * 3}");
                             }
                         }
 
@@ -469,7 +587,8 @@ namespace JDex {
                     }
                     if(onKey) throw new JDexParseException($"Unexpected end of file at line {i + 1} col {begin + offset + 1 + indent * 3}, expected :");
                 }
-            } catch(FormatException e) { throw new JDexParseException($"{e.Message} at line {i + 1} col {begin + 1}"); }
+            } catch(FormatException e) { throw new JDexParseException($"{e.Message} at line {i + 1} col {begin + 1}"); } 
+            catch(OverflowException e) { throw new JDexParseException($"{e.Message} at line {i + 1} col {begin + 1}"); }
 
             return root;
         }
@@ -478,7 +597,19 @@ namespace JDex {
             builder.Append(node._key).Append(':');
 
             if(node._values.Count > 0)
-                builder.Append(" \"").AppendJoin("\", \"", node._values.Select((string s) => ToLiteral(s))).Append('"');
+                builder.Append(" ").AppendJoin(", ", node._values.Select((JDexValue value) => {
+                    switch(value.Type) {
+                    case JDexValueType.String:
+                    return new StringBuilder(value.ToString( ).Length + 2)
+                    .Append("\"").Append(ToLiteral(value.ToString( ))).Append("\"").ToString( );
+                    case JDexValueType.Bool:
+                    case JDexValueType.Int:
+                    case JDexValueType.Float:
+                    return value.ToString( );
+                    }
+                    throw new SystemException("Unreachable");
+                }));
+
             builder.Append('\n');
 
             foreach(var childList in node._children) {

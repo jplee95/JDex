@@ -31,7 +31,7 @@ namespace JDex {
         /// <param name="index">The zero-based index of the value to get or set</param>
         /// <returns>The value at the specified <paramref name="index"/></returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is less than 0 or greater then or equal to <see cref="ValueCount"/></exception>
-        public string this[int i] => _item[i];
+        public JDexValue this[int i] => _item[i];
         /// <summary>Gets the <see cref="ReadOnlyJDexNodeList"/> at the specified <paramref name="key"/></summary>
         /// <param name="key">The non-null key of the list to get</param>
         /// <returns>The <see cref="JDexNode.JDexNodeList"/> at the specified <paramref name="key"/></returns>
